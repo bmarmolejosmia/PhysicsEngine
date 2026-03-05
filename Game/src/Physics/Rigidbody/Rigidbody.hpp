@@ -13,7 +13,8 @@ namespace physics
 		void SetInertia(float p_inertia);
 		void SetMass(float p_mass);
 		void ClearAccumulators();
-		void Integrate(float p_deltaTime);
+		void IntegrateVelocity(float p_deltaTime);
+		void IntegratePosition(float p_deltaTime);
 		void AddForce(const Vector3& p_force);
 		void AddTorque(const Vector3& p_torque);
 

@@ -1,10 +1,6 @@
 #include <irrlicht.h>
 
 #include "Physics/World/PhysicsWorld.hpp"
-#include "Physics/Rigidbody/Rigidbody.hpp"
-#include "Physics/Collision/Collider.hpp"
-#include "Physics/Collision/Broadphase.hpp"
-#include "Physics/Collision/Narrowphase.hpp"
 #include "Physics/Visuals/DebugPhysicsRenderer.hpp"
 
 using namespace irr;
@@ -24,13 +20,13 @@ int main()
         return 1;
     }
 
-    device->setWindowCaption(L"Physics Engine Debug View");
+    device->setWindowCaption(L"Physics Engine - Phase C Test");
 
     video::IVideoDriver* driver = device->getVideoDriver();
     scene::ISceneManager* sceneManager = device->getSceneManager();
 
-    irr::scene::ICameraSceneNode* camera = sceneManager->addCameraSceneNodeFPS();
-    camera->setPosition(Vector3(0, 1, -3));
+    scene::ICameraSceneNode* camera = sceneManager->addCameraSceneNodeFPS();
+    camera->setPosition(Vector3(0.0f, 2.0f, -6.0f));
     device->getCursorControl()->setVisible(false);
 
     // ------------------------------------------------------------
@@ -38,26 +34,30 @@ int main()
     // ------------------------------------------------------------
     PhysicsWorld physicsWorld;
 
+    // Ground (static)
     Rigidbody groundBody;
     groundBody.SetPosition(Vector3(0.0f, 0.0f, 0.0f));
-    groundBody.SetMass(0.0f); // static
+    groundBody.SetMass(0.0f);
 
+    // Falling sphere (dynamic)
     Rigidbody fallingBody;
     fallingBody.SetPosition(Vector3(0.0f, 5.0f, 0.0f));
     fallingBody.SetMass(1.0f);
-
+ 
     physicsWorld.AddRigidbody(&groundBody);
     physicsWorld.AddRigidbody(&fallingBody);
 
+    // ------------------------------------------------------------
+    // Colliders
+    // ------------------------------------------------------------
     Collider groundCollider(&groundBody, ShapeType::Box);
     groundCollider.Box().halfSize = Vector3(5.0f, 0.5f, 5.0f);
 
     Collider fallingCollider(&fallingBody, ShapeType::Sphere);
     fallingCollider.Sphere().radius = 0.5f;
 
-    std::vector<Collider*> colliders;
-    colliders.push_back(&groundCollider);
-    colliders.push_back(&fallingCollider);
+    physicsWorld.AddCollider(&groundCollider);
+    physicsWorld.AddCollider(&fallingCollider);
 
     // ------------------------------------------------------------
     // Debug renderer
@@ -83,14 +83,8 @@ int main()
             (currentTime - previousTime) / 1000.0f;
         previousTime = currentTime;
 
+        // Single authoritative physics call
         physicsWorld.StepSimulation(deltaTime);
-
-        // Broadphase + Narrowphase (for now just to exercise the pipeline)
-        std::vector<CollisionPair> collisionPairs;
-        Broadphase::ComputeCollisionPairs(colliders, collisionPairs);
-
-        std::vector<Contact> contacts;
-        Narrowphase::GenerateContacts(collisionPairs, contacts);
 
         debugRenderer.Sync();
 

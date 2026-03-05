@@ -1,4 +1,5 @@
 #include "Rigidbody.hpp"
+#include <cmath>
 
 namespace physics
 {
@@ -82,7 +83,33 @@ namespace physics
 		m_torqueAccumulator.set(0.0f, 0.0f, 0.f);
 	}
 
-	void Rigidbody::Integrate(float p_deltaTime)
+	void Rigidbody::IntegrateVelocity(float p_deltaTime)
+	{
+		if (p_deltaTime <= 0.0f || IsStatic())
+		{
+			ClearAccumulators();
+			return;
+		}
+
+		const Vector3 acceleration = m_forceAccumulator * m_inverseMass;
+		m_velocity += acceleration * p_deltaTime;
+
+		const float dampingPerSecond = 0.5f;
+		m_velocity *= std::pow(1.0f - dampingPerSecond, p_deltaTime);
+		
+		ClearAccumulators();
+	}
+
+	void Rigidbody::IntegratePosition(float p_deltaTime)
+	{
+		if (p_deltaTime <= 0.0f || IsStatic())
+			return;
+
+		m_position += m_velocity * p_deltaTime;
+	}
+
+
+	/*void Rigidbody::Integrate(float p_deltaTime)
 	{
 		//Prevent invalid integration
 		if (p_deltaTime <= 0.0f || IsStatic())
@@ -113,5 +140,5 @@ namespace physics
 		}
 
 		ClearAccumulators();
-	}
+	}*/
 }
