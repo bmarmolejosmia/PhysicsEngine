@@ -87,10 +87,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Physics\Collision\Broadphase.cpp" />
+    <ClCompile Include="src\Physics\Collision\Collider.cpp" />
+    <ClCompile Include="src\Physics\Collision\Narrowphase.cpp" />
     <ClCompile Include="src\Physics\Rigidbody\Rigidbody.cpp" />
+    <ClCompile Include="src\Physics\Visuals\DebugPhysicsRenderer.cpp" />
     <ClCompile Include="src\Physics\World\PhysicsWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Physics\Collision\AABB.hpp" />
+    <ClInclude Include="src\Physics\Collision\Broadphase.hpp" />
+    <ClInclude Include="src\Physics\Collision\Collider.hpp" />
+    <ClInclude Include="src\Physics\Collision\Contact.hpp" />
+    <ClInclude Include="src\Physics\Collision\Narrowphase.hpp" />
+    <ClInclude Include="src\Physics\Visuals\DebugPhysicsRenderer.hpp" />
     <ClInclude Include="src\Physics\Rigidbody\Rigidbody.hpp" />
     <ClInclude Include="src\Physics\Utilities\PhysicsTypes.hpp" />
     <ClInclude Include="src\Physics\World\PhysicsWorld.hpp" />

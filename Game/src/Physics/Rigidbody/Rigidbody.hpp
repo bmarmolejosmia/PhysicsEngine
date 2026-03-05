@@ -24,12 +24,48 @@ namespace physics
 
 		bool IsStatic() const;
 
-		Quat rotation;
+		const Vector3& GetPosition() const 
+		{ 
+			return m_position; 
+		}
+		void SetPosition(const Vector3& p_position) 
+		{
+			m_position = p_position;
+		}
 
-		Vector3 position;
-		Vector3 velocity;
-		Vector3 angularVelocity;
+		const Quat& GetRotation() const
+		{
+			return m_rotation;
+		}
+		void SetRotation(const Quat& p_rotation)
+		{
+			m_rotation = p_rotation;
+		}
+
+		const Vector3& GetVelocity() const
+		{
+			return m_velocity;
+		}
+		void SetVelocity(const Vector3& p_velocity)
+		{
+			m_velocity = p_velocity;
+		}
+
+		const Vector3& GetAngularVelocity() const
+		{
+			return m_angularVelocity;
+		}
+		void SetAngularVelocity(const Vector3& p_angularVelocity)
+		{
+			m_angularVelocity = p_angularVelocity;
+		}
 	private:
+		Quat m_rotation;
+
+		Vector3 m_position;
+		Vector3 m_velocity;
+		Vector3 m_angularVelocity;
+
 		float m_mass;
 		float m_inverseMass;
 		float m_inertia;

@@ -2,10 +2,10 @@
 
 namespace physics
 {
-	Rigidbody::Rigidbody() : position(0.0f, 0.0f, 0.0f)
-							, rotation(0.0f, 0.0f, 0.0f, 1.0f)
-							, velocity(0.0f, 0.0f, 0.0f)
-							, angularVelocity(0.0f, 0.0f, 0.0f)
+	Rigidbody::Rigidbody() : m_position(0.0f, 0.0f, 0.0f)
+							, m_rotation(0.0f, 0.0f, 0.0f, 1.0f)
+							, m_velocity(0.0f, 0.0f, 0.0f)
+							, m_angularVelocity(0.0f, 0.0f, 0.0f)
 							, m_forceAccumulator(0.0f, 0.0f, 0.0f)
 							, m_torqueAccumulator(0.0f, 0.0f, 0.0f)
 							, m_mass(1.0f)
@@ -92,24 +92,24 @@ namespace physics
 		}
 
 		const Vector3 acceleration = m_forceAccumulator * m_inverseMass;
-		velocity += acceleration * p_deltaTime;
-		position += velocity * p_deltaTime;
+		m_velocity += acceleration * p_deltaTime;
+		m_position += m_velocity * p_deltaTime;
 
 		const Vector3 angularAcceleration = m_torqueAccumulator * m_inverseInertia;
-		angularVelocity += angularAcceleration * p_deltaTime;
+		m_angularVelocity += angularAcceleration * p_deltaTime;
 
-		const float angularSpeed = angularVelocity.getLength();
+		const float angularSpeed = m_angularVelocity.getLength();
 
 		if (angularSpeed > 0.00001f)
 		{
-			Vector3 axis = angularVelocity / angularSpeed;
+			Vector3 axis = m_angularVelocity / angularSpeed;
 			const float angle = angularSpeed * p_deltaTime;
 
 			Quat deltaRotation;
 			deltaRotation.fromAngleAxis(angle, axis);
 
-			rotation = deltaRotation * rotation;
-			rotation.normalize();
+			m_rotation = deltaRotation * m_rotation;
+			m_rotation.normalize();
 		}
 
 		ClearAccumulators();
