@@ -17,6 +17,8 @@ public:
 	void AddRigidbody(physics::Rigidbody* p_body);
 	void AddCollider(physics::Collider* p_collider);
 
+	void AddRigidbody(physics::Rigidbody* p_body, irr::scene::ISceneNode* p_node);
+
 	void Sync();
 private:
 	irr::scene::ISceneManager* m_sceneManager;

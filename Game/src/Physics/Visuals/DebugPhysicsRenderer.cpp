@@ -58,6 +58,17 @@ void DebugPhysicsRenderer::AddCollider(physics::Collider* p_collider)
 	m_colliderVisuals.push_back({ p_collider, node });
 }
 
+void DebugPhysicsRenderer::AddRigidbody(physics::Rigidbody* p_body, irr::scene::ISceneNode* p_node)
+{
+	if (!p_body || !p_node)
+	{
+		return;
+	}
+
+	m_bodyVisuals.push_back({ p_body, p_node });
+}
+
+
 void DebugPhysicsRenderer::Sync()
 {
 	for (BodyVisual& visual : m_bodyVisuals)
