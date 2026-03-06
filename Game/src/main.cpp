@@ -1,5 +1,4 @@
 /*
-*/
 #include <irrlicht.h>
 #include "Physics/World/PhysicsWorld.hpp"
 #include "Physics/Visuals/DebugPhysicsRenderer.hpp"
@@ -41,6 +40,7 @@ int main()
     PhysicsWorld physicsWorld;
 
     // Ground (static)
+    
     Rigidbody groundBody;
     groundBody.SetPosition(Vector3(floor->getPosition()));
     groundBody.SetMass(0.0f);
@@ -113,10 +113,10 @@ int main()
     device->drop();
     return 0;
 }
+*/
 
 
 
-/*
 #include <irrlicht.h>
 
 int main()
@@ -138,4 +138,5 @@ int main()
 	device->drop();
 	return 0;
 }
+/*
 */

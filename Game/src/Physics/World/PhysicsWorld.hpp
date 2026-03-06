@@ -1,47 +1,40 @@
 #ifndef PHYSICSWORLD_HPP
 #define PHYSICSWORLD_HPP
-
 #include <vector>
 #include "..\Utilities\PhysicsTypes.hpp"
-#include "..\Rigidbody\Rigidbody.hpp"
-#include "..\Collision\Collider.hpp"
-#include "..\Collision\Broadphase.hpp"
-#include "..\Collision\Narrowphase.hpp"
-#include "..\Collision\CollisionResolver.hpp"
-
 
 namespace physics
 {
+	class RigidBody;
+	class Collider;
+
 	class PhysicsWorld
 	{
 	public:
 		PhysicsWorld();
-		~PhysicsWorld() = default;
+		~PhysicsWorld();
+
+		void RegisterRigidbody(RigidBody* p_rigidBody);
+		void UnregisterRigidbody(RigidBody* p_rigidBody);
+
+		void RegisterCollider(Collider* p_collider);
+		void UnregisterCollider(Collider* p_collider);
 
 		void SetGravity(const Vector3& p_gravity);
 		const Vector3& GetGravity() const;
 
-		void SetFixedTimeStep(float p_deltaTime);
-		float GetFixedTimeStep() const;
-
-		void AddRigidbody(Rigidbody* p_body);
-		void RemoveRigidbody(Rigidbody* p_body);
-
-		void AddCollider(Collider* p_collider);
-		void RemoveCollider(Collider* p_collider);
-
-		void StepSimulation(float p_deltaTime);
-	private:
 		void Step(float p_deltaTime);
-		
-		std::vector<Rigidbody*> m_bodies;
-		std::vector<Collider*> m_colliders;
+
+		const std::vector<RigidBody*>& GetRegisteredRigidBodies() const;
+		const std::vector<Collider*>& GetRegisteredColliders() const;
+	private:
+		std::vector<RigidBody*> m_registeredRigidBodies;
+		std::vector<Collider*> m_registeredColliders;
 
 		Vector3 m_gravity;
-
-		float m_fixedTimeStep;
-		float m_timeAccumulator;
 	};
 }
 
 #endif // !PHYSICSWORLD_HPP
+
+

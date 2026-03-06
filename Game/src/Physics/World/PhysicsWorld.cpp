@@ -1,154 +1,106 @@
 #include "PhysicsWorld.hpp"
 #include <algorithm>
-#include <cstdio>
 
 namespace physics
 {
-	PhysicsWorld::PhysicsWorld() : m_bodies()
-								, m_colliders()
-								, m_gravity(0.0f, -9.81f, 0.0f)
-								, m_fixedTimeStep(1.0f / 60.0f)
-								, m_timeAccumulator(0.0f)
+	PhysicsWorld::PhysicsWorld() : m_registeredRigidBodies()
+		, m_registeredColliders()
+		, m_gravity(0.0f, -9.81f, 0.0f)
 	{
+
+	}
+
+	PhysicsWorld::~PhysicsWorld()
+	{
+
+	}
+
+	void PhysicsWorld::RegisterRigidbody(RigidBody* p_rigidBody)
+	{
+		if (p_rigidBody == nullptr)
+		{
+			return;
+		}
+
+		const auto existingRigidBodyIterator = std::find(m_registeredRigidBodies.begin(), m_registeredRigidBodies.end(), p_rigidBody);
+		if (existingRigidBodyIterator != m_registeredRigidBodies.end())
+		{
+			return;
+		}
+
+		m_registeredRigidBodies.push_back(p_rigidBody);
+	}
+
+	void PhysicsWorld::UnregisterRigidbody(RigidBody* p_rigidBody)
+	{
+		if (p_rigidBody == nullptr)
+		{
+			return;
+		}
+
+		const auto existingRigidBodyIterator = std::find(m_registeredRigidBodies.begin(), m_registeredRigidBodies.end(), p_rigidBody);
+		if (existingRigidBodyIterator == m_registeredRigidBodies.end())
+		{
+			return;
+		}
+
+		m_registeredRigidBodies.erase(existingRigidBodyIterator);
+	}
+
+	void PhysicsWorld::RegisterCollider(Collider* p_collider)
+	{
+		if (p_collider == nullptr)
+		{
+			return;
+		}
+
+		const auto existingColliderIterator = std::find(m_registeredColliders.begin(), m_registeredColliders.end(), p_collider);
+		if (existingColliderIterator != m_registeredColliders.end())
+		{
+			return;
+		}
+
+		m_registeredColliders.push_back(p_collider);
+	}
+
+	void PhysicsWorld::UnregisterCollider(Collider* p_collider)
+	{
+		if (p_collider == nullptr)
+		{
+			return;
+		}
+
+		const auto existingColliderIterator = std::find(m_registeredColliders.begin(), m_registeredColliders.end(), p_collider);
+		if (existingColliderIterator == m_registeredColliders.end())
+		{
+			return;
+		}
+
+		m_registeredColliders.erase(existingColliderIterator);
 	}
 
 	void PhysicsWorld::SetGravity(const Vector3& p_gravity)
 	{
 		m_gravity = p_gravity;
 	}
+
 	const Vector3& PhysicsWorld::GetGravity() const
 	{
 		return m_gravity;
 	}
 
-	void PhysicsWorld::SetFixedTimeStep(float p_deltaTime)
-	{
-		if (p_deltaTime > 0.0f)
-		{
-			m_fixedTimeStep = p_deltaTime;
-		}
-	}
-	float PhysicsWorld::GetFixedTimeStep() const
-	{
-		return m_fixedTimeStep;
-	}
-
-	void PhysicsWorld::AddRigidbody(Rigidbody* p_body)
-	{
-		if (!p_body)
-		{
-			return;
-		}
-
-		auto iterator = std::find(m_bodies.begin(), m_bodies.end(), p_body);
-		if (iterator == m_bodies.end())
-		{
-			m_bodies.push_back(p_body);
-		}
-	}
-	void PhysicsWorld::RemoveRigidbody(Rigidbody* p_body)
-	{
-		if (!p_body)
-		{
-			return;
-		}
-
-		auto iterator = std::find(m_bodies.begin(), m_bodies.end(), p_body);
-		if (iterator != m_bodies.end())
-		{
-			m_bodies.erase(iterator);
-		}
-	}
-
-	void PhysicsWorld::AddCollider(Collider* p_collider)
-	{
-		if (!p_collider)
-		{
-			return;
-		}
-
-		auto iterator = std::find(m_colliders.begin(), m_colliders.end(), p_collider);
-		if(iterator == m_colliders.end())
-		{
-			m_colliders.push_back(p_collider);
-		}
-	}
-
-	void PhysicsWorld::RemoveCollider(Collider* p_collider)
-	{
-		if (!p_collider)
-		{
-			return;
-		}
-
-		auto iterator = std::find(m_colliders.begin(), m_colliders.end(), p_collider);
-		if (iterator != m_colliders.end())
-		{
-			m_colliders.erase(iterator);
-		}
-	}
-
-	void PhysicsWorld::StepSimulation(float p_deltaTime)
-	{
-		if (p_deltaTime <= 0.0f)
-		{
-			return;
-		}
-
-		m_timeAccumulator += p_deltaTime;
-
-		while (m_timeAccumulator >= m_fixedTimeStep)
-		{
-			Step(m_fixedTimeStep);
-			m_timeAccumulator -= m_fixedTimeStep;
-		}
-	}
-
 	void PhysicsWorld::Step(float p_deltaTime)
 	{
-		for (Rigidbody* body : m_bodies)
-		{
-			if (!body || body->IsStatic())
-			{
-				continue;
-			}
+		(void)p_deltaTime;
+	}
 
-			body->AddForce(m_gravity * body->GetMass());
-			body->IntegrateVelocity(p_deltaTime);
-		}
+	const std::vector<RigidBody*>& PhysicsWorld::GetRegisteredRigidBodies() const
+	{
+		return m_registeredRigidBodies;
+	}
 
-		printf("Colliders: %zu\n", m_colliders.size());
-
-		std::vector<CollisionPair> collisionPairs;
-		Broadphase::ComputeCollisionPairs(m_colliders, collisionPairs);
-		printf("Pairs: %zu\n", collisionPairs.size());
-
-		for (const CollisionPair& pair : collisionPairs)
-		{
-			printf("Pair: A=%d B=%d\n",
-				   (int)pair.first->GetType(),
-				   (int)pair.second->GetType());
-		}
-
-		std::vector<Contact> contacts;
-		Narrowphase::GenerateContacts(collisionPairs, contacts);
-		printf("Contacts: %zu\n", contacts.size());
-
-		for (const Contact& contact : contacts)
-		{
-			printf("Penetration: %f\n", contact.penetration);
-		}
-
-		CollisionResolver::ResolveContacts(contacts);
-
-		for (Rigidbody* body : m_bodies)
-		{
-			if (!body || body->IsStatic())
-			{
-				continue;
-			}
-
-			body->IntegratePosition(p_deltaTime);
-		}
+	const std::vector<Collider*>& PhysicsWorld::GetRegisteredColliders() const
+	{
+		return m_registeredColliders;
 	}
 }
